@@ -95,16 +95,13 @@
 !*
 !******************************************************************************
 
-! Number of design variables (default = 1)
-#ifndef ndv
-#define ndv 1
-#endif
-
-module dnadmod
-
+module dnad
+    use dnad_nderiv_mod
     implicit none
 
     private
+
+    integer, parameter :: ndv = dnad_nderiv
 
     real :: negative_one = -1.0
     type,public:: dual  ! make this private will create difficulty to use the
@@ -1815,4 +1812,4 @@ contains
 
     end function set_NaN
 
-end module dnadmod
+end module dnad

@@ -1,0 +1,8 @@
+module dnad_nderiv_mod
+implicit none
+
+public
+
+integer, parameter :: dnad_nderiv = @DNAD_NDERIV@
+
+end module
