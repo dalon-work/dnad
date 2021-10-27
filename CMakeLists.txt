@@ -6,10 +6,6 @@ set(IS_NOT_SUBDIRECTORY ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR}
 # If built as a subdirectory, we don't want to do any testing, 
 # because testing forces a specific number of derivatives
 if (${IS_NOT_SUBDIRECTORY})
-    option(DNAD_TESTING "Build unit tests")
-endif()
-
-if (${IS_NOT_SUBDIRECTORY} AND ${DNAD_TESTING})
     set (DNAD_NDERIV 4 CACHE STRING "Number of Independent Variables" FORCE)
 else()
     set (DNAD_NDERIV 0 CACHE STRING "Number of Independent Variables")
@@ -25,13 +21,12 @@ add_library(dnad STATIC src/dnad.f90 dnad_nderiv.f90)
 add_library(DNAD::dnad ALIAS dnad)
 
 if (${IS_NOT_SUBDIRECTORY})
-    if (${DNAD_TESTING})
         enable_testing()
     
-        add_executable(unittests test/check.f90)
+        add_executable(unittests test/unittests.f90)
         target_link_libraries(unittests dnad)
-	add_test(NAME unittests_test
-		 COMMAND unittests)
-    endif()
+        add_test(NAME unittests_test
+		         COMMAND $<TARGET_FILE:unittests> ${CMAKE_CURRENT_BINARY_DIR}
+		         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 

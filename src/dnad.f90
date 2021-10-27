@@ -101,6 +101,7 @@ module dnad
 
     private
 
+    public :: dnad_nderiv
     integer, parameter :: ndv = dnad_nderiv
 
     real :: negative_one = -1.0
