@@ -255,12 +255,17 @@ module dnad
     
     public atan2
     interface atan2
-        module procedure atan2_d ! arctan of a dual number, elemental
+        module procedure atan2_d, atan2_r1, atan2_r2 ! arctan of a dual number, elemental
     end interface
     
     public cos
     interface cos
         module procedure cos_d ! cosine of a dual number, elemental
+    end interface
+
+    public cosh
+    interface cosh
+        module procedure cosh_d ! cosine of a dual number, elemental
     end interface
     
     public dcos
@@ -349,6 +354,11 @@ module dnad
     public sin
     interface sin
         module procedure sin_d ! obtain sine of a dual number, elemental
+    end interface
+
+    public sinh
+    interface sinh
+        module procedure sinh_d ! obtain sine of a dual number, elemental
     end interface
     
     public dsin
@@ -1376,6 +1386,44 @@ contains
 
     end function atan2_d
 
+    !-----------------------------------------
+    ! ATAN2 of dual numbers
+    ! <res, dres> = atan2(<u, du>, <v, dv>)
+    !             = <atan2(u, v), v / (u^2 + v^2) * du - u / (u^2 + v^2) * dv>
+    !----------------------------------------
+    elemental function atan2_r1(u, v) result(res)
+        type(dual), intent(in) :: u
+        real, intent(in) :: v
+        type(dual) :: res
+
+        real :: usq_plus_vsq
+
+        res%x = atan2(u%x, v)
+
+        usq_plus_vsq = u%x**2 + v**2
+        res%dx = v / usq_plus_vsq * u%dx
+
+    end function atan2_r1
+
+    !-----------------------------------------
+    ! ATAN2 of dual numbers
+    ! <res, dres> = atan2(<u, du>, <v, dv>)
+    !             = <atan2(u, v), v / (u^2 + v^2) * du - u / (u^2 + v^2) * dv>
+    !----------------------------------------
+    elemental function atan2_r2(u, v) result(res)
+        real, intent(in) :: u
+        type(dual), intent(in) :: v
+        type(dual) :: res
+
+        real :: usq_plus_vsq
+
+        res%x = atan2(u, v%x)
+
+        usq_plus_vsq = u**2 + v%x**2
+        res%dx =  - u / usq_plus_vsq * v%dx
+
+    end function atan2_r2
+
 
     !-----------------------------------------
     ! COS of dual numbers
@@ -1389,6 +1437,19 @@ contains
         res%dx = -sin(u%x) * u%dx
 
     end function cos_d
+
+    !-----------------------------------------
+    ! HYPERBOLIC COS of dual numbers
+    ! <res, dres> = cos(<u, du>) = <cosh(u), -sinh(u) * du>
+    !----------------------------------------
+    elemental function cosh_d(u) result(res)
+        type(dual), intent(in) :: u
+        type(dual) :: res
+
+        res%x = cosh(u%x)
+        res%dx = sinh(u%x) * u%dx
+
+    end function cosh_d
 
 
     !-----------------------------------------
@@ -1735,6 +1796,19 @@ contains
         res%dx = cos(u%x) * u%dx
 
     end function sin_d
+
+    !-----------------------------------------
+    ! HYPERBOLIC SIN of dual numbers
+    ! <res, dres> = sinh(<u, du>) = <sinh(u), cosh(u) * du>
+    !----------------------------------------
+    elemental function sinh_d(u) result(res)
+        type(dual), intent(in) :: u
+        type(dual) :: res
+
+        res%x = sinh(u%x)
+        res%dx = cosh(u%x) * u%dx
+
+    end function sinh_d
 
 
     !-----------------------------------------

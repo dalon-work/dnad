@@ -13,6 +13,8 @@ call addition
 call subtraction
 call multiplication
 call division
+call power
+call trig
 
 contains
 
@@ -342,6 +344,162 @@ subroutine division()
     call check(c%dx(3) == 0.0)
     call check(c%dx(4) == 0.0)
   end block div_integer
+end subroutine
+
+subroutine power()
+  type(dual) :: a, b
+  integer :: i
+
+  a = 2
+  b = 4
+
+  a%dx(1) = 1.0
+  b%dx(2) = 1.0
+
+  pow_duals: block
+    type(dual) :: c
+    test_name = "pow_duals"
+    c = a ** b
+    call check(c == 16.0)
+    call check(c%dx(1) == 4.0*2.0**3.0)
+    call check(c%dx(2) == 2.0**4.0*log(2.0))
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block pow_duals
+
+end subroutine
+
+subroutine trig()
+  type(dual) :: a, b
+  integer :: i
+
+  a = 0.5
+  b = 0.25
+
+  a%dx(1) = 1.0
+  b%dx(2) = 1.0
+
+  cosine: block
+    type(dual) :: c
+    test_name = "cosine"
+    c = cos(a)
+    call check(c == cos(0.5))
+    call check(c%dx(1) == -sin(0.5))
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block cosine
+
+  sine: block
+    type(dual) :: c
+    test_name = "sine"
+    c = sin(a)
+    call check(c == sin(0.5))
+    call check(c%dx(1) == cos(0.5))
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block sine
+
+  tangent: block
+    type(dual) :: c
+    test_name = "tangent"
+    c = tan(a)
+    call check(c == tan(0.5))
+    call check(c%dx(1) == 1.0/cos(0.5)**2)
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block tangent
+
+  arccosine: block
+    type(dual) :: c
+    test_name = "arccosine"
+    c = acos(a)
+    call check(c == acos(0.5))
+    call check(c%dx(1) == -1.0/sqrt(1.0-0.5**2))
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block arccosine
+
+  arcsine: block
+    type(dual) :: c
+    test_name = "arcsine"
+    c = asin(a)
+    call check(c == asin(0.5))
+    call check(c%dx(1) == 1.0/sqrt(1.0-0.5**2))
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block arcsine
+
+  arctangent: block
+    type(dual) :: c
+    test_name = "arctangent"
+    c = atan(a)
+    call check(c == atan(0.5))
+    call check(c%dx(1) == 1.0/(1.0+0.5**2))
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block arctangent
+
+  arctangent2_dual: block
+    type(dual) :: c
+    test_name = "arctangent2_dual"
+    c = atan2(a,b)
+    call check(c == atan2(0.5,0.25))
+    call check(c%dx(1) == 0.25/(0.5**2+0.25**2))
+    call check(c%dx(2) == -0.5/(0.5**2+0.25**2))
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block arctangent2_dual
+
+  arctangent2_real1: block
+    type(dual) :: c
+    test_name = "arctangent2_real1"
+    c = atan2(a,0.25)
+    call check(c == atan2(0.5,0.25))
+    call check(c%dx(1) == 0.25/(0.5**2+0.25**2))
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block arctangent2_real1
+
+  arctangent2_real2: block
+    type(dual) :: c
+    test_name = "arctangent2_real2"
+    c = atan2(0.5,b)
+    call check(c == atan2(0.5,0.25))
+    call check(c%dx(1) == 0.0)
+    call check(c%dx(2) == -0.5/(0.5**2+0.25**2))
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block arctangent2_real2
+
+  hyperbolic_cosine: block
+    type(dual) :: c
+    test_name = "hyperbolic_cosine"
+    c = cosh(a)
+    call check(c == cosh(0.5))
+    call check(c%dx(1) == sinh(0.5))
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block hyperbolic_cosine
+
+  hyperbolic_sine: block
+    type(dual) :: c
+    test_name = "hyperbolic_sine"
+    c = sinh(a)
+    call check(c == sinh(0.5))
+    call check(c%dx(1) == cosh(0.5))
+    call check(c%dx(2) == 0.0)
+    call check(c%dx(3) == 0.0)
+    call check(c%dx(4) == 0.0)
+  end block hyperbolic_sine
+
 end subroutine
 
 end program unittests
