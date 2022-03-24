@@ -22,6 +22,9 @@ add_library(DNAD::dnad ALIAS dnad)
 
 if (${IS_NOT_SUBDIRECTORY})
         enable_testing()
+
+        target_compile_options(dnad PUBLIC -coverage)
+        target_link_options(dnad PUBLIC -coverage -lgcov)
     
         add_executable(unittests test/unittests.f90)
         target_link_libraries(unittests dnad)
